@@ -47,7 +47,23 @@ class LayerNormalization(nn.Module):
         std = x.std(dim = -1, keepdim=True)
         return self.alpha * (x-mean) / (std + self.eps) + self.bias 
     
-class Encoder(nn.Module):
-    def __init__(self):
-        pass
+class FeedForwardBlock(nn.Module):
+    def __init__(self, d_model:int, d_ff:int, dropout:float)-> None:
+        super().__init__(FeedForwardBlock)
+        self.linear_1 = nn.Linear(d_model, d_ff) # W1 and B1
+        self.dropout = nn.Dropout(dropout)
+        self.linear_2 = nn.Linear(d_ff, d_model) # W2 and B2
+
+    def forward(self, x):
+        # (Batch, Seq_Len, d_model) --> (Batch, Seq_Len, d_ff) --> (Batch, Seq_Len, d_model)
+        return self.linear_2(self.dropout(torch.relu(self.linear_1(x))))
     
+
+class MultiHeadAttentionBlock(nn.Module):
+    def __init(self, d_model:int, h:int, dropout:float) -> None:
+        super().__init__(MultiHeadAttentionBlock)
+        self.d_model = d_model
+        self.h = h
+        assert d_model % h ==0, "d_model is not divisible by h"
+    
+        self.d_k = d_model // h
